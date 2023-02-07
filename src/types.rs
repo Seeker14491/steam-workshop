@@ -1,13 +1,13 @@
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OuterResponse {
     #[serde(rename = "response")]
     pub response: InnerResponse,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InnerResponse {
     #[serde(rename = "total")]
     pub total: i64,
@@ -20,7 +20,7 @@ pub struct InnerResponse {
 }
 
 #[serde_as]
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PublishedFileDetails {
     #[serde(rename = "result")]
     pub result: u32,
@@ -183,7 +183,7 @@ pub struct PublishedFileDetails {
     pub ban_text_check_result: i64,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Tag {
     #[serde(rename = "tag")]
     pub tag: String,
@@ -192,7 +192,7 @@ pub struct Tag {
     pub display_name: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct VoteData {
     #[serde(rename = "score")]
     pub score: f32,
