@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{format_err, Context, Result};
 use futures_util::Stream;
 
 use crate::types::{OuterResponse, PublishedFileDetails};
@@ -14,7 +14,7 @@ pub fn query_all_files(
         let mut how_many_more = None;
         let mut cursor = "*".to_string();
         loop {
-            let resp = client
+            let bytes = client
                 .get("https://api.steampowered.com/IPublishedFileService/QueryFiles/v1")
                 .query(&[
                     ("key", api_key.as_str()),
@@ -26,8 +26,16 @@ pub fn query_all_files(
                     ("cursor", &cursor),
                 ])
                 .send()
+                .await?
+                .bytes()
                 .await?;
-            let json: OuterResponse = resp.json().await?;
+            let bytes_2 = bytes.clone();
+            let json: OuterResponse = serde_json::from_slice(&bytes).with_context(move || {
+                format_err!(
+                    "Unexpected Steam Web API response (QueryFiles endpoint):\n{:?}",
+                    bytes_2
+                )
+            })?;
 
             if how_many_more.is_none() {
                 how_many_more = Some(json.response.total);
