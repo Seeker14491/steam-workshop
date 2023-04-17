@@ -158,6 +158,7 @@ pub struct PublishedFileDetails {
     pub num_reports: i64,
 
     #[serde(rename = "tags")]
+    #[serde(default)]
     pub tags: Vec<Tag>,
 
     #[serde(rename = "vote_data")]
