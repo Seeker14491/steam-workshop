@@ -1,15 +1,28 @@
 use anyhow::{format_err, Context, Result};
 use futures_util::Stream;
+use serde::{Deserialize, Serialize};
+use serde_json::Value as JsonValue;
 
-use crate::types::{OuterResponse, PublishedFileDetails};
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct OuterResponse {
+    pub response: InnerResponse,
+}
 
-pub mod types;
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct InnerResponse {
+    pub total: i64,
+
+    #[serde(rename = "publishedfiledetails")]
+    pub published_file_details: Option<Vec<JsonValue>>,
+
+    pub next_cursor: Option<String>,
+}
 
 pub fn query_all_files(
     client: reqwest::Client,
     api_key: String,
     app_id: u32,
-) -> impl Stream<Item = Result<Vec<PublishedFileDetails>>> {
+) -> impl Stream<Item = Result<Vec<JsonValue>>> {
     ez_stream::try_unbounded(move |tx| async move {
         let mut how_many_more = None;
         let mut cursor = "*".to_string();
